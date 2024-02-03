@@ -4,7 +4,7 @@ import json
 ##This function will return a personalized workout based on your oersonal information and goals. BUT will also
 #Take into account the information provided by your fitbit.
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="YOUR_API_KEY")
 
 # Define a function for recommendation on daily health stats
 def get_Workout(age, gender, height, weight, equipment, goals, sleep, steps, distance, active, calories):
