@@ -15,9 +15,9 @@ def download_pdf(text_content, filename):
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 #Let's define our data files
-Unorganised = "/Users/julesgransden/Desktop/Perso Projects/HealthFitnessApp/Code/FitDB/dailyActivity_merged.csv"
-DailyActivity = "/Users/julesgransden/Desktop/Perso Projects/HealthFitnessApp/Code/DailyActivity"
-SleepActivity = "/Users/julesgransden/Desktop/Perso Projects/HealthFitnessApp/Code/DailySLeep"
+Unorganised = "PATH_TO_unorganisedDailyData"
+DailyActivity = "PATH_to_DailyActivity_folder"
+SleepActivity = "PATH_to_DailySleep_folder"
 
 
 
