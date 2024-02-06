@@ -3,7 +3,7 @@ import json
 
 #This will provide recomendations based on your daily health and fitness data
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="YOUR_API_KEY")
 
 # Define a function for recommendation on daily health stats
 def get_health_recommendations(sleep, steps, distance, active, calories):
