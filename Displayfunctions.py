@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from sklearn.linear_model import LinearRegression
+import numpy as np
 
 
 def DisplaySingleBarInfo(df, dateCol, dataCol):
@@ -35,6 +36,11 @@ def DisplaySingleBarInfo(df, dateCol, dataCol):
 
     # Adjust layout to prevent clipping of labels
     plt.tight_layout()  
+    
+    #Add average
+    plt.axhline(y=np.nanmean(df[dataCol]), color='red', linestyle='--', linewidth=3, alpha = 0.4, label='Avg')
+    
+    plt.legend()
 
     plt.show()
     
