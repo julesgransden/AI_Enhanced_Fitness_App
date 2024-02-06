@@ -3,18 +3,49 @@ import json
 
 #This will provide recomendations based on your daily health and fitness data
 
-client = OpenAI(api_key="YOUR_API_KEY")
+client = OpenAI(api_key="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")
 
 # Define a function for recommendation on daily health stats
 def get_health_recommendations(sleep, steps, distance, active, calories):
-    """Give a health review for a 18-65 year old adult"""
-    return json.dumps({"sleep": sleep, "steps":steps, "distance":distance, "activeTime":active, "calories":calories})
+    """Generate health recommendations based on provided data."""
+    # Determine sleep recommendation
+    if sleep < 7:
+        sleep_recommendation = f"The daily average sleep time of {sleep:.2f} hours is below the recommended amount of 7-9 hours for adults. It's important to prioritize improving sleep duration and quality."
+    elif sleep >= 7 and sleep <= 9:
+        sleep_recommendation = f"Your sleep duration of {sleep:.2f} hours falls within the recommended range of 7-9 hours for adults, which is excellent."
+    else:
+        sleep_recommendation = f"Your sleep duration of {sleep:.2f} hours exceeds the recommended range of 7-9 hours for adults. While longer sleep may not necessarily be harmful, ensure the quality of your sleep."
+    
+    # Determine activity recommendation based on steps and distance
+    if steps >= 10000 and distance >= 5:
+        activity_recommendation = f"Walking {steps} steps daily, covering a distance of {distance} miles, shows that you're meeting the recommended daily activity levels. Keep up the good work!"
+    else:
+        activity_recommendation = f"Walking {steps} steps daily, covering a distance of {distance} miles, is a positive start, but consider increasing your activity levels to meet the recommended targets."
+    
+    # Determine caloric burn recommendation
+    if calories >= 2000:
+        calories_recommendation = f"Burning an average of {calories} calories daily indicates an active lifestyle, which is commendable."
+    else:
+        calories_recommendation = f"Consider increasing your daily caloric burn to support a more active lifestyle."
+    
+    # Construct the final recommendation message
+    recommendation_message = (
+        "Based on the data provided, it seems that there are some areas where improvements could be made to achieve a healthier lifestyle:\n\n"
+        f"Sleep: {sleep_recommendation}\n\n"
+        f"Physical Activity: {activity_recommendation}\n\n"
+        f"Caloric Burn: {calories_recommendation}\n\n"
+        "In summary, while there are aspects of your lifestyle that are positive, such as your physical activity levels, there are opportunities for improvement, particularly in sleep duration and caloric burn."
+    )
+    
+    return recommendation_message
+
+
 
 def Recommendations(sleep, steps, distance, active_time, calories):
 
     messages = [
         {"role": "user", "content": "Am I living a healthy lifestyle based on this data?"},
-        {"role": "user", "content": f"My average sleep time is {sleep} hours."},
+        {"role": "user", "content": f"My Daily average sleep time is {sleep} hours."},
         {"role": "user", "content": f"I walk {steps} steps daily, covering a distance of {distance} miles."},
         {"role": "user", "content": f"I spend {active_time} minutes daily being active."},
         {"role": "user", "content": f"I burn {calories} calories daily."},
