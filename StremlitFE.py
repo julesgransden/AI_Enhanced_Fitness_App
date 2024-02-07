@@ -15,9 +15,9 @@ def download_pdf(text_content, filename):
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 #Let's define our data files
-Unorganised = "PATH_TO_unorganisedDailyData"
-DailyActivity = "PATH_to_DailyActivity_folder"
-SleepActivity = "PATH_to_DailySleep_folder"
+Unorganised = "/Users/julesgransden/Desktop/Perso Projects/HealthFitnessApp/Code/FitDB/dailyActivity_merged.csv"
+DailyActivity = "/Users/julesgransden/Desktop/Perso Projects/HealthFitnessApp/Code/DailyActivity"
+SleepActivity = "/Users/julesgransden/Desktop/Perso Projects/HealthFitnessApp/Code/DailySLeep"
 
 
 
@@ -82,35 +82,38 @@ elif selected == "Health Data":
     generate = st.button('AI Health Recap')
     if generate:
         st.write(Recommendations(ASleeps,ASteps,ADistance,AActiv,ACals))
+    
+    tab1, tab2= st.tabs(["Data", "Correlations"])
+    
+    with tab1:
+        # Access the selected individual from session state
+        st.subheader("_Steps_")
+        st.pyplot(DisplaySingleBarInfo(df,"Date","TotalSteps"))
         
-    
-    # Access the selected individual from session state
-    st.subheader("_Steps_")
-    st.pyplot(DisplaySingleBarInfo(df,"Date","TotalSteps"))
-    
-    st.subheader("_Distance Traveled_")
-    st.pyplot(DisplaySingleBarInfo(df,"Date","TotalDistance"))
-    
-    st.subheader("_Sleep_")
-    st.pyplot(DisplayMultipleBarInfo(df,8,10))
-    st.write('_Note: some individuals didn\'t wear their watches to sleep everynight... Resulting in poor sleep data_' )
-    
-    st.subheader("_Calories_")
-    st.pyplot(DisplaySingleBarInfo(df,"Date","Calories"))
-    
-    st.subheader("_Active Time_")
-    st.pyplot(DisplayMultipleBarInfo(df,3,7))
-    
+        st.subheader("_Distance Traveled_")
+        st.pyplot(DisplaySingleBarInfo(df,"Date","TotalDistance"))
+        
+        st.subheader("_Sleep_")
+        st.pyplot(DisplayMultipleBarInfo(df,8,10))
+        st.write('_Note: some individuals didn\'t wear their watches to sleep everynight... Resulting in poor sleep data_' )
+        
+        st.subheader("_Calories_")
+        st.pyplot(DisplaySingleBarInfo(df,"Date","Calories"))
+        
+        st.subheader("_Active Time_")
+        st.pyplot(DisplayMultipleBarInfo(df,3,7))
+        
     #Corelations in the data
-    st.header("Lets look at some correlations in your data:")
-    st.subheader("_Calories vs Steps vs Sedentary Time_")
-    st.pyplot(DisplayCaloriesRelationship(df))
-    
-    st.subheader("_Sleep Time vs Steps vs Active Time_")
-    st.pyplot(DisplaySleepTimeRelationship(df))
-    
-    st.subheader("_Time to fall asleep vs Steps vs Active Time_")
-    st.pyplot(DisplayTimeToFallAsleepRelationship(df))
+    with tab2:
+        st.header("Lets look at some correlations in your data:")
+        st.subheader("_Calories vs Steps vs Sedentary Time_")
+        st.pyplot(DisplayCaloriesRelationship(df))
+        
+        st.subheader("_Sleep Time vs Steps vs Active Time_")
+        st.pyplot(DisplaySleepTimeRelationship(df))
+        
+        st.subheader("_Time to fall asleep vs Steps vs Active Time_")
+        st.pyplot(DisplayTimeToFallAsleepRelationship(df))
     
 elif selected == "Workouts":
     st.title("AI Workouts")
@@ -136,7 +139,8 @@ elif selected == "Workouts":
     st.subheader("Here is your personalized weekly workout plan: ")
     if submit:
         work = Workout(age,gender,height,weight,equipment,goals,ASleeps,ASteps,ADistance,AActiv,ACals)
-        work = st.write(work)
+        st.write(work)
+
     
 elif selected == "Wrapped":
     indiv = int(st.session_state.selected_individual)
