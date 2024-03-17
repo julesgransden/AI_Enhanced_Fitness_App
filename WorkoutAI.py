@@ -4,7 +4,7 @@ import json
 ##This function will return a personalized workout based on your oersonal information and goals. BUT will also
 #Take into account the information provided by your fitbit.
 
-client = OpenAI(api_key="YOUR_API_KEY")
+client = OpenAI(api_key="OPEN_AI_KEY")
 
 # Define a function for recommendation on daily health stats
 def get_Workout(age, gender, height, weight, equipment, goals, sleep, steps, distance, active, calories):
@@ -33,6 +33,101 @@ def get_Workout(age, gender, height, weight, equipment, goals, sleep, steps, dis
     # Your logic to generate the workout schedule based on the health stats recommendations
     # Add recommendations and personalized workout plan here
     return workout_schedule
+
+def getActivationSet(ActiveInjury, age, gender, height, weight, equipment):
+    
+    """Generate a personalized Activation Set depending on your injury to prevent injury"""
+    # This function should return a string containing the
+    activation = f"Provide a personalized short 3 to 5 exercise activation to focus warm up on injured area and reduce the chance of reinjury, for {age} year old {gender}:\n"
+    activation += f"Height: {height} cm, Weight: {weight} kg\n"
+    activation += f"Availability of workout equipment: {equipment}\n"
+    activation += f"Injury: {ActiveInjury}\n"
+    
+    return activation
+
+def ActivationSet(ActiveInjury, age, gender, height, weight, equipment):
+    messages = [
+        {"role": "user", "content": "Provide a personalized short 3 to 5 exercise activation to focus the warm up on injured area and reduce the chance of reinjury before I start my workout"},
+        {"role": "user", "content": f"I am {age} years old."},
+        {"role": "user", "content": f"My gender is {gender}."},
+        {"role": "user", "content": f"My height is {height} cm."},
+        {"role": "user", "content": f"My weight is {weight} kg."},
+        {"role": "user", "content": f"I have access to {equipment} workout equipment."},
+        {"role": "user", "content": f"My Injury is: {ActiveInjury}."}
+    ]
+    
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "getActivationSet",
+                "description": "Generate a personalized injury specific activation set to do before I start my workout",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "age": {"type": "integer", "description": "Age of the individual"},
+                        "gender": {"type": "string", "description": "Gender of the individual"},
+                        "height": {"type": "integer", "description": "Height of the individual in cm"},
+                        "weight": {"type": "integer", "description": "Weight of the individual in kg"},
+                        "equipment": {"type": "string", "description": "Availability of workout equipment"},
+                        "ActiveInjury": {"type": "string", "description": "Active Injury of the individual"},
+                    },
+                    "required": ["age", "gender", "height", "weight", "equipment", "ActiveInjury"],
+                },
+            },
+        }
+    ]
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo-1106",
+        messages=messages,
+        tools=tools,
+        tool_choice="auto",  # auto is default, but we'll be explicit
+    )
+    
+    response_message = response.choices[0].message
+    tool_calls = response_message.tool_calls
+
+    # Step 2: check if the model wanted to call a function
+    if tool_calls:
+        # Step 3: call the function
+        # Note: the JSON response may not always be valid; be sure to handle errors
+        available_functions = {
+            "getActivationSet": getActivationSet,
+        }  # only one function in this example, but you can have multiple
+        messages.append(response_message)  # extend conversation with assistant's reply
+        
+        # Step 4: send the info for each function call and function response to the model
+        for tool_call in tool_calls:
+            function_name = tool_call.function.name
+            function_to_call = available_functions[function_name]
+            function_args = json.loads(tool_call.function.arguments)
+            function_response = function_to_call(
+                age=function_args.get("age"),
+                gender=function_args.get("gender"),
+                height=function_args.get("height"),
+                weight=function_args.get("weight"),
+                equipment=function_args.get("equipment"),
+                ActiveInjury=function_args.get("ActiveInjury")
+            )
+            messages.append(
+                {
+                    "tool_call_id": tool_call.id,
+                    "role": "tool",
+                    "name": function_name,
+                    "content": function_response,
+                }
+            )  # extend conversation with function response
+        
+        second_response = client.chat.completions.create(
+            model="gpt-3.5-turbo-1106",
+            messages=messages,
+        )  # get a new response from the model where it can see the function response
+
+        result = (second_response.choices[0].message).content
+        return result
+    
+
 
 def Workout(age, gender, height, weight, equipment, goals, sleep, steps, distance, active_time, calories):
 
